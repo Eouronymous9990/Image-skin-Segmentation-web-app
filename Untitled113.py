@@ -2,11 +2,12 @@
 # coding: utf-8
 
 # In[1]:
+import cv2  
+
 import base64
 import numpy as np
 import streamlit as st
 from PIL import Image
-import cv2  
 
 def create_skin_mask(image, kernel_size=5):
     """Creates a skin mask using HSV color space and morphological operations.
