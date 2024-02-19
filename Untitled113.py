@@ -60,7 +60,7 @@ def add_bg_from_local(path_to_image):
     )
 
 # تشغيل الدالة لإضافة الخلفية من ملف محلي
-path =r"bg.jpeg"
+path ="bg.jpeg"
 
 add_bg_from_local(path)
 
