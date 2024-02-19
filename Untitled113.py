@@ -2,8 +2,7 @@
 # coding: utf-8
 
 # In[1]:
-
-
+import base64
 import numpy as np
 import streamlit as st
 from PIL import Image
@@ -40,26 +39,60 @@ def create_skin_mask(image, kernel_size=5):
 
     return mask
 
+
+# تحميل الصور
+
+# إنشاء عمودين
+def add_bg_from_local(path_to_image):
+    with open(path_to_image, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpeg;base64,{encoded_string}");
+            background-size: cover;
+            background-position: center center;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# تشغيل الدالة لإضافة الخلفية من ملف محلي
+path =r"bg.jpeg"
+
+add_bg_from_local(path)
+
 def main():
-    st.title("Landmark Recognition (Improved)")
+    st.title("Skin Mask Segmentation")
 
     # Image upload and display
     uploaded_image = st.file_uploader("Choose your image (PNG, JPG):", type=['png', 'jpg'])
     if uploaded_image is not None:
+        col1, col2 = st.columns(2)
         # Use PIL for image preprocessing (robustly handle alpha channels)
         image = Image.open(uploaded_image)
-        image = image.convert('RGB')  # Ensure the image is in RGB format
+        image = image.convert('RGB')
+        with col1:
+            st.image(image,caption="Original")
 
         # Convert to NumPy array and BGR for OpenCV
         image = np.array(image)
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)#2BGR
 
         # User-adjustable kernel size
-        kernel_size = st.sidebar.slider('Kernel size:', 1, 20, 5, 2)
+        kernel_size = st.sidebar.slider('Kernel size:', 1, 30, 5, 2)
 
         # Create and display the skin mask
         mask = create_skin_mask(image, kernel_size)
-        st.image(mask, channels='L', width=400)  # Display as grayscale image
+
+        # عرض الصورة الثانية في العمود الثاني
+        with col2:
+            st.image(mask, caption='الصورة الثانية')
+
+        #st.image(mask, channels='L', width=400)
+        #st.image()# Display as grayscale image
 
 if __name__ == '__main__':
     main()
